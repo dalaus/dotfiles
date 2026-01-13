@@ -1,0 +1,29 @@
+[
+  {
+    "layer": "top",
+    "mode": "dock",
+    "position": "top",
+    "modules-left": [
+      "hyprland/workspaces",
+    ],
+    "modules-center": [
+      "clock"
+    ],
+    "modules-right": [
+      "cava",
+      "pulseaudio",
+      "waybar/language",
+      "tray"
+    ],
+
+    "waybar/workspaces": {
+      "format": "{index}"
+    },
+
+    "waybar/language": {
+      "format": "{}",
+      "format-en": "EN",
+      "format-ru": "RU"
+    }
+  }
+]

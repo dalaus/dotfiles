@@ -24,6 +24,30 @@
       "format": "{}",
       "format-en": "EN",
       "format-ru": "RU"
+    },
+
+    "clock": {
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "mode": "year",
+        "mode-mon-col": 3,
+        "format": {
+          "months": "<span color='#f3e2e2'><b>{}</b></span>",
+          "days": "<span color='#cccccc'>{}</span>",
+          "weeks": "<span color='#090818'><b>W{}</b></span>",
+          "weekdays": "<span color='#f3e2e2'><b>{}</b></span>",
+          "today": "<span color='#ff0000'><b><u>{}</u></b></span>"
+        }
+      },
+      "locale": "ru_RU.UTF-8",
+      "format-alt": "{:%A, %B %d, %Y (%R)}",
+      "actions": {
+        "on-click-right": "mode",
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+      }
     }
   }
 ]

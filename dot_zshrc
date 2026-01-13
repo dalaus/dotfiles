@@ -1,0 +1,20 @@
+export PATH="$HOME/.bin:$PATH"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export HISTFILE=~/.zsh_history
+export HISTSIZE=1000
+export SAVEHIST=1000
+export EDITOR=nvim
+setopt appendhistory
+setopt SHARE_HISTORY
+
+eval "$(oh-my-posh init zsh --config 'onehalf.minimal')"
+
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+autoload -Uz compinit
+compinit
+
+
+alias hx="helix"
+

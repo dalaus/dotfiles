@@ -24,6 +24,9 @@ chezmoi diff
 # Validate Hyprland configuration syntax
 hyprctl reload  # This will fail if config has syntax errors
 
+# Reload Waybar configuration
+killall -SIGUSR2 waybar
+
 # Check JSON syntax for Waybar config
 python3 -m json.tool dot_config/waybar/config
 

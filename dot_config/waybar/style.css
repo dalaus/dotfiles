@@ -85,7 +85,7 @@ button:hover {
   margin: 5px 5px 0 5px;
   padding: 0px 8px 0px 8px;
   background-color: @background;
-  border-radius: 10px;
+  border-radius: 30px;
 }
 
 @keyframes blink {

@@ -106,8 +106,14 @@ chezmoi status
 ```
 dot_config/           # User configuration files
 ├── hypr/            # Hyprland window manager
+│   ├── autostart.conf
+│   ├── bind.conf
 │   ├── hyprland.conf
-│   └── hyprsunset.conf
+│   ├── hyprsunset.conf
+│   ├── io.conf
+│   ├── permission.conf
+│   ├── style.conf
+│   └── windowrule.conf
 └── waybar/          # Status bar
     ├── config       # JSON configuration
     └── style.css    # CSS styling

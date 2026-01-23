@@ -205,5 +205,4 @@ chore: reorganize zsh aliases
 - Document system dependencies required for configurations
 - Keep track of package requirements
 - Note version requirements where applicable
-- Consider cross-platform compatibility when possible</content>
-<parameter name="filePath">/home/dalao/.local/share/chezmoi/AGENTS.md
+- Consider cross-platform compatibility when possible

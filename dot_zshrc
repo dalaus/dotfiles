@@ -5,6 +5,7 @@ export HISTFILE=~/.zsh_history
 export HISTSIZE=100000
 export SAVEHIST=100000
 export EDITOR=nvim
+export GOPATH="$HOME/stuff/go"
 setopt appendhistory
 setopt SHARE_HISTORY
 

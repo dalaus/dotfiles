@@ -5,7 +5,9 @@ export HISTFILE=~/.zsh_history
 export HISTSIZE=100000
 export SAVEHIST=100000
 export EDITOR=nvim
+export PATH="$PATH:$HOME/stuff/go/bin"
 export GOPATH="$HOME/stuff/go"
+export ANDROID_HOME="$HOME/.androidsdk"
 setopt appendhistory
 setopt SHARE_HISTORY
 
@@ -18,7 +20,7 @@ compinit
 
 
 proxyon() {
-    local proxy_url="${1:-http://127.0.0.1:10801}"
+    local proxy_url="${1:-http://127.0.0.1:10800}"
     export {http_proxy,https_proxy,HTTP_PROXY,HTTPS_PROXY,all_proxy,ALL_PROXY}="$proxy_url"
 }
 

@@ -1,0 +1,6 @@
+theme = Bright Lights
+font-size = 11
+background = #030303
+background-opacity = 0.9
+shell-integration-features = ssh-env,ssh-terminfo
+keybind = global:ctrl+backquote=toggle_quick_terminal

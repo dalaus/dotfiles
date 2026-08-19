@@ -1,4 +1,5 @@
 local mainMod = "SUPER"
+local ipc = "noctalia msg "
 
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
@@ -10,6 +11,11 @@ hl.bind(mainMod .. " + l", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + k", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + j", hl.dsp.focus({ direction = "down" }))
 
+hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + k", hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + j", hl.dsp.window.move({ direction = "down" }))
+
 hl.bind("SUPER + SHIFT + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("systemctl suspend"))
 hl.bind("CONTROL + ALT + Delete", hl.dsp.exit())
@@ -17,9 +23,12 @@ hl.bind(mainMod .. " + V", hl.dsp.window.float())
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 
+hl.bind("ALT + Tab", hl.dsp.exec_cmd(ipc .. "window-switcher"))
+hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd(ipc .. "panel-toggle launcher"))
+hl.bind(mainMod .. "+ comma", hl.dsp.exec_cmd(ipc .. "settings-toggle"))
+
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd("ghostty"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("dolphin"))
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("fuzzel"))
 hl.bind("Print", hl.dsp.exec_cmd("flameshot gui -c -p ~/stuff/pic/"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("flameshot full -c -p ~/stuff/pic/"))
 hl.bind("Scroll_Lock", hl.dsp.exec_cmd("flameshot gui"))
@@ -44,7 +53,12 @@ local workspaces = {
 
 for _, ws in pairs(workspaces) do
     hl.bind(mainMod .. " + " .. ws.key, hl.dsp.focus({ workspace = ws.id }))
-    hl.bind(mainMod .. " + SHIFT" .. " + " .. ws["key"], hl.dsp.window.move({ workspace = ws["id"], follow = true }))
+    if ws.id < 90 then
+        hl.bind(
+            mainMod .. " + SHIFT" .. " + " .. ws["key"],
+            hl.dsp.window.move({ workspace = ws["id"], follow = true })
+        )
+    end
 end
 
 hl.bind(mainMod .. " + TAB", hl.dsp.focus({ workspace = "e+1" }))

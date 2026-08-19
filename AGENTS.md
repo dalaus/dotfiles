@@ -1,158 +1,201 @@
 # AGENTS.md - Dotfiles Repository Guidelines
 
-This document provides guidelines for agentic coding agents working on this dotfiles repository managed with chezmoi. The repository contains Linux desktop configuration files for Hyprland, Waybar, and shell environments.
+Guidelines for agents working on this chezmoi-managed Linux desktop setup.
+Stack: Hyprland (Lua config API), Waybar, Ghostty, Fuzzel, Flameshot, oh-my-posh, zsh.
 
-## Build/Lint/Test Commands
+## Overview
+
+- Source of truth lives in this repo; deploy with `chezmoi apply`.
+- Hyprland is configured in **Lua** via the `hl` API (not classic `.conf` hyprlang).
+- Entry point: `dot_config/hypr/hyprland.lua` — it `require`s modular files.
+- `AGENTS.md` and `apply_all.sh` are listed in `.chezmoiignore` (repo-only, not deployed).
+
+## Build / Lint / Test Commands
 
 ### Applying Configurations
 ```bash
-# Apply all dotfiles to the current system
+# Apply all managed files
 chezmoi apply
 
-# Apply specific file
-chezmoi apply ~/.config/hypr/hyprland.conf
+# Apply one target path (deployed path, not source path)
+chezmoi apply ~/.config/hypr/hyprland.lua
 
-# Dry run to see what would be changed
+# Preview changes without writing
 chezmoi apply --dry-run
-
-# Check for differences between source and target
 chezmoi diff
+
+# Status of source vs destination
+chezmoi status
+```
+
+### Quick apply + reload helper
+```bash
+# Applies configs and soft-reloads Waybar
+./apply_all.sh
 ```
 
 ### Validation and Testing
 ```bash
-# Validate Hyprland configuration syntax
-hyprctl reload  # This will fail if config has syntax errors
+# Hyprland: reload config (fails on syntax/runtime config errors)
+hyprctl reload
 
-# Reload Waybar configuration
+# Format Hyprland Lua with stylua (settings in stylua.toml)
+stylua dot_config/hypr/*.lua
+
+# Waybar: soft reload
 killall -SIGUSR2 waybar
 
-# Check JSON syntax for Waybar config
+# Waybar JSON syntax
 python3 -m json.tool dot_config/waybar/config
 
-# Test shell configuration syntax
+# Zsh syntax
 zsh -n dot_zshrc
 
-# Validate CSS syntax for Waybar styles
-# Note: No dedicated CSS validator, but can use browser dev tools or online validators
+# oh-my-posh theme JSON
+python3 -m json.tool \
+  dot_config/oh-my-posh/themes/onehalf.minimal.omp.json
 
-# Test hyprsunset configuration
-hyprsunset --help  # Check if daemon is running properly
+# INI-style configs (fuzzel, flameshot) — no dedicated linter;
+# inspect after apply / restart the app
 ```
 
 ### Repository Management
 ```bash
-# Add new file to chezmoi management
+# Track a new file from the live system
 chezmoi add ~/.config/some/new/file.conf
 
-# Edit managed file
-chezmoi edit ~/.config/hypr/hyprland.conf
+# Edit a managed file
+chezmoi edit ~/.config/hypr/hyprland.lua
 
-# Update repository with changes
+# Re-add after manual destination edits
 chezmoi re-add
 
-# Check repository status
 chezmoi status
 ```
 
 ## Code Style Guidelines
 
-### Shell Scripts (.zshrc, shell scripts)
-- Use 4 spaces for indentation
-- Include comments for complex configurations
-- Group related exports and settings together
-- Use descriptive variable names
-- Follow POSIX shell conventions where possible
+### Shell (`dot_zshrc`, scripts)
+- 4 spaces for indentation
+- Group related exports and settings
+- Descriptive names; prefer clear one-liners for simple helpers
 - End files with a newline
-- Keep lines under 80 characters when possible
+- Keep lines under ~80–100 characters when practical
 
-### Hyprland Configuration
-- Use consistent indentation (4 spaces)
-- Group related settings in logical sections
-- Use descriptive comments for complex configurations
-- Follow the official Hyprland documentation conventions
-- Use variables for repeated values (e.g., `$terminal`, `$mainMod`)
-- Keep animation and decoration settings organized
-- Use RGBA color format consistently
-- Group keybindings by functionality
+### Hyprland Lua (`dot_config/hypr/*.lua`)
+- **Format**: stylua — 4 spaces (`stylua.toml`)
+- **API**: use the global `hl` table (`hl.bind`, `hl.config`, `hl.env`,
+  `hl.exec_cmd`, `hl.on`, `hl.window_rule`, `hl.permission`, `hl.layout`, …)
+- **Modules**: one concern per file; wire them from `hyprland.lua` via `require`
+- Do **not** convert modules back to classic hyprlang `.conf` unless requested
+- Group related binds, rules, and config tables
+- Prefer variables for repeated values (e.g. `mainMod`)
+- RGBA / color strings consistent with existing style.lua
+- Name window rules descriptively (`name = "float-flameshot-pins"`)
+- Custom layouts live in `experiments.lua` and register via `hl.layout.register`
+- LuaLS stubs: `.luarc.json` points at `/usr/share/hypr/stubs`
+- Keep `hyprsunset.conf` as classic conf (not Lua) unless the project migrates it
 
-### JSON Configuration Files (Waybar)
-- Use 4 spaces for indentation
-- Keep objects and arrays properly formatted
-- Use consistent naming conventions (camelCase)
-- Include comments where helpful (JSON5 style when supported)
-- Keep configuration modular and readable
-- Validate JSON syntax before committing
+### Waybar JSON
+- 4 spaces
+- Readable modular structure; camelCase keys as used by Waybar
+- Validate with `python3 -m json.tool` before committing
 
-### CSS Files (Waybar styles)
-- Use 4 spaces for indentation
-- Group related selectors together
-- Use CSS custom properties (variables) for colors and common values
-- Follow BEM-like naming conventions for classes
-- Include comments for complex selectors or properties
-- Keep specificity low and organized
-- Use consistent color formats (hex, rgb, or CSS custom properties)
+### Waybar CSS
+- 4 spaces
+- Prefer `@define-color` / custom properties for shared colors
+- Keep specificity low; group related selectors
+- Match existing palette (background / text tokens already defined)
 
-### General Guidelines
-- All files should end with a newline
-- Use UTF-8 encoding
-- Keep line lengths reasonable (<100 characters when possible)
-- Include comments for non-obvious configurations
-- Follow the principle of least surprise
-- Test configurations after changes
-- Use version control appropriately for configuration changes
+### Other app configs
+- **Ghostty** (`ghostty/config`): key = value, one setting per line
+- **Fuzzel** / **Flameshot** (`.ini`): section headers, keep existing tone
+- **oh-my-posh** (JSON theme): keep `$schema` and palette tokens consistent
+
+### General
+- UTF-8, trailing newline
+- Comment non-obvious behavior (esp. security permissions and window rules)
+- Principle of least surprise; test after changes
+- Do not store secrets in this repo
 
 ## File Organization
 ```
-dot_config/           # User configuration files
-├── hypr/            # Hyprland window manager
-│   ├── autostart.conf
-│   ├── bind.conf
-│   ├── hyprland.conf
-│   ├── hyprsunset.conf
-│   ├── io.conf
-│   ├── permission.conf
-│   ├── style.conf
-│   └── windowrule.conf
-└── waybar/          # Status bar
-    ├── config       # JSON configuration
-    └── style.css    # CSS styling
-
-dot_zshrc            # Zsh shell configuration
+.
+├── AGENTS.md                 # This file (chezmoi-ignored)
+├── apply_all.sh              # chezmoi apply + waybar reload (ignored)
+├── .chezmoiignore
+├── dot_zshrc                 # → ~/.zshrc
+├── dot_config/               # → ~/.config/
+│   ├── hypr/
+│   │   ├── hyprland.lua      # Entry: requires modules below
+│   │   ├── autostart.lua
+│   │   ├── bind.lua
+│   │   ├── experiments.lua   # Custom Lua layouts (grid, circle)
+│   │   ├── input_output.lua
+│   │   ├── layout.lua
+│   │   ├── permission.lua
+│   │   ├── style.lua
+│   │   ├── windowrule.lua
+│   │   ├── hyprsunset.conf
+│   │   ├── stylua.toml
+│   │   └── .luarc.json       # source: dot_luarc.json
+│   ├── waybar/
+│   │   ├── config
+│   │   └── style.css
+│   ├── ghostty/config
+│   ├── fuzzel/fuzzel.ini
+│   ├── flameshot/flameshot.ini
+│   └── oh-my-posh/themes/
+│       └── onehalf.minimal.omp.json
+└── private_dot_local/        # → ~/.local/ (private mode on dir)
+    └── share/icons/
+        └── phinger-hyprcursors-light/
 ```
 
-## Naming Conventions
-- Use lowercase with underscores for file names (chezmoi convention)
-- Prefix with `dot_` for files that go in home directory
-- Use descriptive names that indicate purpose
-- Follow existing patterns in the repository
+### Hyprland module roles
+| File | Role |
+|------|------|
+| `hyprland.lua` | Entry point; `require` modules; global env fixes |
+| `autostart.lua` | Startup apps on `hyprland.start` |
+| `bind.lua` | Keybinds (terminal, launcher, workspaces, …) |
+| `style.lua` | Gaps, borders, decoration, cursor env |
+| `layout.lua` | Default layout / scrolling settings |
+| `input_output.lua` | Monitors and keyboard/mouse input |
+| `permission.lua` | Ecosystem permissions (screencopy, …) |
+| `windowrule.lua` | Window rules |
+| `experiments.lua` | Experimental custom layouts + workspace rules |
+
+## Naming Conventions (chezmoi)
+- `dot_*` → files/dirs under `$HOME` with leading `.` stripped of the prefix
+- `private_*` → private destination permissions
+- Prefer lowercase with underscores for new managed source names
+- Follow existing paths under `dot_config/`
 
 ## Error Handling
-- Test configurations after making changes
-- Use `chezmoi apply --dry-run` before applying changes
-- Validate syntax before committing
-- Keep backups of working configurations
-- Document known issues or workarounds in comments
+- Validate Lua/JSON/zsh before apply when possible
+- Prefer `chezmoi apply --dry-run` / `chezmoi diff` before real apply
+- After Hyprland changes: `hyprctl reload`
+- After Waybar changes: `killall -SIGUSR2 waybar` or `./apply_all.sh`
+- Keep comments for known workarounds (e.g. WebKit compositing env)
 
 ## Security Considerations
-- Be careful with executable permissions on scripts
-- Avoid storing sensitive information in dotfiles
-- Use appropriate file permissions (644 for configs, 755 for scripts)
-- Review changes before applying to production systems
+- Do not commit tokens, passwords, or private keys
+- Be careful with `permission.lua` and screencopy allow-lists
+- Window rules that block screen share (e.g. KeePassXC) are intentional
+- Config files: typically 644; scripts: 755
+- `private_dot_local` exists for stricter local data (icons, etc.)
 
 ## Testing Approach
-1. Make changes to source files
-2. Validate syntax using appropriate tools
-3. Apply changes with `chezmoi apply --dry-run`
-4. Test functionality in a safe environment
-5. Apply to production system
-6. Verify everything works as expected
+1. Edit source files in this repo
+2. Run syntax/format checks (`stylua`, `json.tool`, `zsh -n`)
+3. `chezmoi apply --dry-run` / `chezmoi diff`
+4. `chezmoi apply` (or `./apply_all.sh`)
+5. `hyprctl reload` and verify binds/windows/autostart
+6. Spot-check Waybar, Fuzzel, Ghostty, Flameshot as needed
 
 ## Commit Guidelines
 
-### Message Format
-Use the Conventional Commits specification for consistent commit messages:
-
+### Message format (Conventional Commits)
 ```
 <type>[optional scope]: <description>
 
@@ -161,48 +204,52 @@ Use the Conventional Commits specification for consistent commit messages:
 [optional footer(s)]
 ```
 
-**Types:**
-- `feat`: A new feature
-- `fix`: A bug fix
-- `docs`: Documentation only changes
-- `style`: Changes that do not affect code meaning (formatting, etc.)
-- `refactor`: Code changes that neither fix bugs nor add features
-- `perf`: Performance improvements
-- `test`: Adding or correcting tests
-- `chore`: Build process or auxiliary tool changes
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
 
-**Examples for dotfiles:**
+**Examples:**
 ```
-feat: add hyprland window manager config
-fix: correct waybar CSS styling
-docs: update AGENTS.md guidelines
-style: format zshrc with consistent indentation
-chore: reorganize zsh aliases
+feat(hypr): add custom circle layout workspace
+fix(waybar): correct language module format
+docs: update AGENTS.md for Lua Hyprland config
+style(hypr): format modules with stylua
+chore: add apply_all helper script
 ```
 
-### Alternative Patterns
-- **Imperative mood**: "Add feature" not "Added feature"
-- **Category prefixes**: `[UI] Add dark mode`, `[API] Fix endpoint`
-- **Issue references**: `Fix login bug (#123)`
-
-### Best Practices
-- Keep first line under 50 characters
-- Start with present tense verbs
-- Capitalize first word, no trailing period
-- Explain what and why, not just what
-- Reference issues/PRs when applicable
-- Group related changes together
-- Test before committing
-- Keep commits focused and atomic
+### Best practices
+- Imperative mood, first line ≤50 chars, no trailing period
+- Explain why when non-obvious
+- Atomic, focused commits; test before committing
 
 ## Environment Variables
-- Use XDG Base Directory specification where possible
-- Keep environment variables organized in logical groups
-- Document the purpose of custom environment variables
-- Use consistent naming (UPPER_CASE with underscores)
+- Prefer XDG paths (`~/.config`, `~/.local`)
+- Shell exports live in `dot_zshrc`; session/cursor env often in `style.lua` via `hl.env`
+- Use `UPPER_CASE` for env vars
 
-## Dependencies
-- Document system dependencies required for configurations
-- Keep track of package requirements
-- Note version requirements where applicable
-- Consider cross-platform compatibility when possible
+## Dependencies (runtime stack)
+Documented for agents; install via system packages as needed:
+
+| Component | Role |
+|-----------|------|
+| Hyprland (+ Lua config / stubs) | WM; configs under `dot_config/hypr` |
+| hyprsunset | Night light (`hyprsunset.conf`) |
+| Waybar | Status bar |
+| Ghostty | Terminal (`SUPER+Return`) |
+| Fuzzel | App launcher (`SUPER+D`) |
+| Flameshot | Screenshots |
+| dunst | Notifications (autostart) |
+| awww | Wallpaper daemon (autostart) |
+| nm-applet | Network tray (autostart) |
+| hyprpolkitagent | Polkit agent (autostart) |
+| oh-my-posh | Zsh prompt theme |
+| zsh-autosuggestions / zsh-syntax-highlighting | Shell plugins |
+| phinger cursors | XCURSOR / HYPRCURSOR theme |
+| stylua | Optional: format Hyprland Lua |
+| chezmoi | Dotfile deployment |
+
+## Agent Notes
+- When editing Hyprland, prefer the modular Lua files over stuffing everything into `hyprland.lua`.
+- Binds for apps should match real binaries used in this setup (ghostty, fuzzel, flameshot, dolphin).
+- Do not “fix” Lua back to `.conf` style; the project intentionally uses the Lua API.
+- Cursor assets under `private_dot_local/share/icons/` are bulky binary-ish assets — avoid drive-by reformatting.
+- Color accent in UI configs is often `#d32450` / `rgba(d32450…)`; keep palette consistent unless redesigning.
+)

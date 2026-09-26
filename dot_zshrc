@@ -1,3 +1,5 @@
+source /etc/zsh/zshrc
+
 export PATH="$HOME/.bin:$PATH"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
@@ -30,7 +32,3 @@ proxyoff() {
 
 alias hx="helix"
 alias mpa="mpv *"
-
-if uwsm check may-start && uwsm select; then
-    exec uwsm start default
-fi

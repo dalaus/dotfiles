@@ -1,0 +1,3 @@
+[theme.templates.user.ayugram]
+input_path = "telegram.tdesktop-theme"
+output_path = "~/.local/share/AyuGramDesktop/tdata/themes/noctalia.tdesktop-theme"

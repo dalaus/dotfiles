@@ -10,7 +10,7 @@ hl.config({
         kb_layout = "us,ru",
         kb_variant = "",
         kb_model = "",
-        kb_options = "grp:win_space_toggle",
+        kb_options = "",
         kb_rules = "",
         follow_mouse = 1,
         sensitivity = 0,

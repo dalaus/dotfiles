@@ -1,6 +1,8 @@
 local mainMod = "SUPER"
 local ipc = "noctalia msg "
 
+hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("hyprctl switchxkblayout all next"))
+
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
@@ -35,6 +37,7 @@ hl.bind("Scroll_Lock", hl.dsp.exec_cmd("flameshot gui"))
 
 hl.bind(mainMod .. " + F5", hl.dsp.exec_cmd("hyprctl dispatch sendshortcut,F5,class:com.obsproject.Studio"))
 hl.bind(mainMod .. " + F6", hl.dsp.exec_cmd("hyprctl dispatch sendshortcut,F6,class:com.obsproject.Studio"))
+hl.bind("CONTROL + SHIFT + Space", hl.dsp.exec_cmd("handy --toggle-transcription"))
 
 local workspaces = {
     { key = "1", id = 1 },
